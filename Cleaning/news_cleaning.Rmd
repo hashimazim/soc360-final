@@ -1,0 +1,160 @@
+```{r setup}
+library(tidyverse)
+library(dplyr)
+library(tm)
+library(wordcloud2)
+```
+
+```{r csv}
+news_titles <- read.csv("article_data_full_2.csv") 
+```
+
+```{r nyt cleaning}
+news_titles_nyt <- news_titles |>
+  filter(Source == "The New York Times") |>
+  select(Title, Source)
+```
+
+```{r nyt tm}
+titles_nyt <- Corpus(VectorSource(news_titles_nyt$Title))
+
+titles_nyt <- titles_nyt |>
+  tm_map(removeNumbers) |>
+  tm_map(removePunctuation) |>
+  tm_map(stripWhitespace)
+titles_nyt <- tm_map(titles_nyt, content_transformer(tolower))
+titles_nyt <- tm_map(titles_nyt, removeWords, stopwords("english"))
+```
+
+```{r nyt df}
+dtm_nyt <- TermDocumentMatrix(titles_nyt)
+matrix_nyt <- as.matrix(dtm_nyt)
+words_nyt <- sort(rowSums(matrix_nyt),decreasing = TRUE)
+df_nyt <- data.frame(word = names(words_nyt), freq = words_nyt)
+```
+
+```{r nyt wordcloud}
+nyt_wordcloud <- wordcloud2(slice_max(df_nyt, order_by = freq, n = 200), size = .4, color = 'random-dark')
+
+nyt_wordcloud
+```
+
+```{r alj cleaning}
+news_titles_alj <- news_titles |>
+  filter(Source == "Al Jazeera English") |>
+  select(Title, Source)
+```
+
+```{r alj tm}
+titles_alj <- Corpus(VectorSource(news_titles_alj$Title))
+
+titles_alj <- titles_alj |>
+  tm_map(removeNumbers) |>
+  tm_map(removePunctuation) |>
+  tm_map(stripWhitespace)
+titles_alj <- tm_map(titles_alj, content_transformer(tolower))
+titles_alj <- tm_map(titles_alj, removeWords, stopwords("english"))
+```
+
+```{r alj df}
+dtm_alj <- TermDocumentMatrix(titles_alj)
+matrix_alj <- as.matrix(dtm_alj)
+words_alj <- sort(rowSums(matrix_alj),decreasing = TRUE)
+df_alj <- data.frame(word = names(words_alj), freq = words_alj)
+```
+
+```{r alj wordcloud}
+alj_wordcloud <- wordcloud2(slice_max(df_alj, order_by = freq, n = 200), size = .4, color = 'random-dark')
+
+alj_wordcloud
+```
+
+```{r time cleaning}
+news_titles_time <- news_titles |>
+  filter(Source == "Time") |>
+  select(Title, Source)
+```
+
+```{r time tm}
+titles_time <- Corpus(VectorSource(news_titles_time$Title))
+
+titles_time <- titles_time |>
+  tm_map(removeNumbers) |>
+  tm_map(removePunctuation) |>
+  tm_map(stripWhitespace)
+titles_time <- tm_map(titles_time, content_transformer(tolower))
+titles_time <- tm_map(titles_time, removeWords, stopwords("english"))
+```
+
+```{r time df}
+dtm_time <- TermDocumentMatrix(titles_time)
+matrix_time <- as.matrix(dtm_time)
+words_time <- sort(rowSums(matrix_time),decreasing = TRUE)
+df_time <- data.frame(word = names(words_time), freq = words_time)
+```
+
+```{r time wordcloud}
+time_wordcloud <- wordcloud2(slice_max(df_time, order_by = freq, n = 200), size = .4, color = 'random-dark')
+
+time_wordcloud
+```
+
+```{r bbc cleaning}
+news_titles_bbc <- news_titles |>
+  filter(Source == "BBC News") |>
+  select(Title, Source)
+```
+
+```{r bbc tm}
+titles_bbc <- Corpus(VectorSource(news_titles_bbc$Title))
+
+titles_bbc <- titles_bbc |>
+  tm_map(removeNumbers) |>
+  tm_map(removePunctuation) |>
+  tm_map(stripWhitespace)
+titles_bbc <- tm_map(titles_bbc, content_transformer(tolower))
+titles_bbc <- tm_map(titles_bbc, removeWords, stopwords("english"))
+```
+
+```{r bbc df}
+dtm_bbc <- TermDocumentMatrix(titles_bbc)
+matrix_bbc <- as.matrix(dtm_bbc)
+words_bbc <- sort(rowSums(matrix_bbc),decreasing = TRUE)
+df_bbc <- data.frame(word = names(words_bbc), freq = words_bbc)
+```
+
+```{r bbc wordcloud}
+bbc_wordcloud <- wordcloud2(slice_max(df_bbc, order_by = freq, n = 200), size = .4, color = 'random-dark')
+
+bbc_wordcloud
+```
+
+```{r npr cleaning}
+news_titles_npr <- news_titles |>
+  filter(Source == "NPR") |>
+  select(Title, Source)
+```
+
+```{r npr tm}
+titles_npr <- Corpus(VectorSource(news_titles_npr$Title))
+
+titles_npr <- titles_npr |>
+  tm_map(removeNumbers) |>
+  tm_map(removePunctuation) |>
+  tm_map(stripWhitespace)
+titles_npr <- tm_map(titles_npr, content_transformer(tolower))
+titles_npr <- tm_map(titles_npr, removeWords, stopwords("english"))
+```
+
+```{r npr df}
+dtm_npr <- TermDocumentMatrix(titles_npr)
+matrix_npr <- as.matrix(dtm_npr)
+words_npr <- sort(rowSums(matrix_npr),decreasing = TRUE)
+df_npr <- data.frame(word = names(words_npr), freq = words_npr)
+```
+
+```{r npr wordcloud}
+npr_wordcloud <- wordcloud2(slice_max(df_npr, order_by = freq, n = 200), size = .4, color = 'random-dark')
+
+npr_wordcloud
+```

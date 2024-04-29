@@ -1,0 +1,102 @@
+```{r setup}
+library(httr)
+library(jsonlite)
+library(dplyr)
+```
+
+```{r news api key}
+news_api_key <- "5f7d978e337b4b438e78dceb88b166a0"
+```
+
+```{r news request}
+base_url <- "https://newsapi.org/v2/everything"
+parameters <- list(
+  q = "Israel Palestine", 
+  from = Sys.Date() - 30,           
+  to = Sys.Date(),                  
+  apiKey = news_api_key,
+  pageSize = 100                     
+)
+url <- modify_url(base_url, query = parameters)
+
+response <- GET(url)
+
+
+if (http_type(response) == "application/json") {
+  
+  news_data <- fromJSON(content(response, "text"))
+  
+  articles <- news_data$articles
+  
+  article_data <- data.frame(
+    Title = character(),
+    Description = character(),
+    PublishedAt = character(),
+    Source = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (article in articles) {
+     if (!any(article_data$Title == articles$title & article_data$Description == articles$description)) {
+    article_data <- rbind(article_data, data.frame(
+      Title = articles$title,
+      Description = articles$description,
+      PublishedAt = articles$publishedAt,
+      Source = articles$source$name
+    ))
+  }
+  }
+}
+```
+
+
+```{r nytimes api key}
+nytimes_key <- "eyTiKlCiZmRV3gJwpEGRiXZcyRuyB03n"
+```
+
+```{r nytimes request}
+base2_url <- "https://api.nytimes.com/svc/search/v2/articlesearch.json"
+parameters2 <- list(
+  q = "Israel Palestine",
+  begin_date = "20240329",
+  end_date = "20240428",
+  `api-key` = nytimes_key
+)
+url2 <- modify_url(base2_url, query = parameters2)
+
+response2 <- GET(url2)
+
+if (http_type(response2) == "application/json") {
+  
+  nytimes_data <- fromJSON(content(response2, "text"))
+  articles_2 <- nytimes_data$response$docs
+  
+ 
+  article_data_2 <- data.frame(
+    Title = character(),
+    Abstract = character(),
+    PublishedAt = character(),
+    Source = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  for (article in articles_2) {
+    article_data_2 <- rbind(article_data_2, data.frame(
+      Title = articles_2$headline$main,
+      Description = articles_2$abstract,
+      PublishedAt = articles_2$pub_date,
+      Source = articles_2$source
+    ))
+  }
+}
+```
+
+
+
+
+```{r combining}
+article_data_full <- rbind(article_data, article_data_2)
+
+write.csv(article_data_full, "article_data_full.csv", row.names = FALSE)
+```
+
